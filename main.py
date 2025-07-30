@@ -31,10 +31,46 @@ def process_sales(sales):
         total_revenue += prices[item_index]
     return total_revenue
 
+
+def calculate_costs():
+    total_costs = 0
+    for i in range(len(items)):
+        total_costs += inventories[i] * (prices[i] / 2)  
+    return total_costs
+
+def calculate_profit(total_revenue, total_costs):
+    return total_revenue - total_costs
+
+def calculate_profit_maximizing_inventory():
+    max_profit = 0
+    optimal_inventory = []
+    
+    for i in range(len(items)):
+        current_inventory = inventories[i]
+        inventories[i] = 0  
+        
+        total_revenue = process_sales(simulate_customers(1000))  
+        total_costs = calculate_costs()
+        profit = calculate_profit(total_revenue, total_costs)
+        
+        if profit > max_profit:
+            max_profit = profit
+            optimal_inventory = inventories.copy()
+        
+        inventories[i] = current_inventory  
+    
+    return optimal_inventory, max_profit
+
 def generate_report(total_revenue):
     print("Sales Report:")
     print(f"Total Revenue: ₹{total_revenue}")
     print("Remaining Inventory:")
+    print(f"Total Costs of Leftover Items: ₹{calculate_costs()}")
+    print(f"Total Profit: ₹{calculate_profit(total_revenue, calculate_costs())}")
+    print("Items Sold:")
+    print("-------------")
+    optimal_inventory, max_profit = calculate_profit_maximizing_inventory()
+    print(f"Optimal Inventory: {optimal_inventory} with Max Profit: ₹{max_profit}")
     for i in range(len(items)):
         print(f"{items[i]}: {inventories[i]} remaining")
 
